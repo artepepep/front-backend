@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+
+  db:
+    container_name: pgdb
+    image: postgres:16-alpine3.19
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    container_name: web
+    build:
+      context: .
+      dockerfile: marketplace/docker/backend/Dockerfile
+    volumes:
+      - static:/app/web/static
+
+    ports:
+      - 8000:8000
+    env_file:
+      - ./marketplace/backend/.env
+
+
+  nextjs:
+    container_name: nextjs
+    build:
+      context: .
+      dockerfile: marketplace/docker/nextjs/Dockerfile
+    volumes:
+      - node_modules:/app/www/node_modules
+
+    ports:
+      - 3000:3000
+
+
+volumes:
+  static:
+  node_modules:
+  pgdata:
